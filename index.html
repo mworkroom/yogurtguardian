@@ -1,12 +1,548 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Yogurt Guardian</title>
+
+  <style>
+    :root {
+      --bg: #fff7ee;
+      --card: #ffffff;
+      --text: #2f2a24;
+      --muted: #7d7065;
+      --accent: #f08a8a;
+      --accent-dark: #d96f6f;
+      --safe: #5c9b77;
+      --warn: #d8892c;
+      --danger: #c75353;
+      --border: #ead8c8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #fff2df 0%, var(--bg) 45%, #fbe7d5 100%);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 24px 14px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 430px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: 0 12px 30px rgba(113, 74, 46, 0.12);
+      margin-bottom: 14px;
+      backdrop-filter: blur(10px);
+    }
+
+    .status-card {
+      text-align: center;
+    }
+
+    .status-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .status {
+      font-size: 22px;
+      font-weight: 750;
+      margin-bottom: 12px;
+    }
+
+    .status.safe {
+      color: var(--safe);
+    }
+
+    .status.warn {
+      color: var(--warn);
+    }
+
+    .status.danger {
+      color: var(--danger);
+    }
+
+    .count {
+      font-size: 54px;
+      line-height: 1;
+      font-weight: 800;
+      margin: 10px 0 4px;
+    }
+
+    .count-unit {
+      font-size: 16px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .summary-item {
+      background: #fffaf4;
+      border: 1px solid #f1dfcf;
+      border-radius: 18px;
+      padding: 12px 10px;
+    }
+
+    .summary-title {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .summary-value {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 750;
+      margin-bottom: 10px;
+    }
+
+    .button-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .button-grid.two {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    button {
+      border: 0;
+      border-radius: 18px;
+      padding: 14px 12px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      background: #fff1e4;
+      box-shadow: inset 0 0 0 1px #efd7c4;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: none;
+    }
+
+    .primary:active {
+      background: var(--accent-dark);
+    }
+
+    .secondary {
+      background: #fff8f0;
+    }
+
+    .danger-button {
+      background: #ffe4e4;
+      box-shadow: inset 0 0 0 1px #f0c4c4;
+    }
+
+    .small-note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-top: 10px;
+    }
+
+    .batch-info {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 16px;
+      background: #fff8f0;
+      border: 1px solid #f1dfcf;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .batch-info.visible {
+      display: block;
+    }
+
+    .manual-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid #e7d2c0;
+      border-radius: 16px;
+      padding: 13px 12px;
+      font-size: 16px;
+      background: white;
+      color: var(--text);
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 18px;
+    }
+  </style>
 </head>
+
 <body>
-  <h1>Yogurt Guardian</h1>
-  <p>페이지 연결 성공!</p>
+  <main class="app">
+    <header>
+      <h1>Yogurt Guardian</h1>
+      <div class="subtitle">굶지 않기 위한 48시간 방어 시스템</div>
+    </header>
+
+    <section class="card status-card">
+      <div class="status-label">현재 상태</div>
+      <div id="status" class="status">재고 입력 필요</div>
+
+      <div id="portionCount" class="count">0</div>
+      <div class="count-unit">남은 요거트 용기</div>
+
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="summary-title">남은 일수</div>
+          <div id="daysLeft" class="summary-value">0일</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-title">원통 재고</div>
+          <div id="tubCount" class="summary-value">0통</div>
+        </div>
+      </div>
+
+      <div id="batchInfo" class="batch-info"></div>
+    </section>
+
+    <section class="card">
+      <div class="section-title">먹었음</div>
+      <div class="button-grid">
+        <button class="primary" onclick="eatYogurt(2)">둘 다 먹음</button>
+        <div class="button-grid two">
+          <button onclick="eatYogurt(1)">나만 먹음</button>
+          <button onclick="eatYogurt(1)">엄마만 먹음</button>
+        </div>
+      </div>
+      <div class="small-note">하루 기본 소비량은 2개로 계산해요.</div>
+    </section>
+
+    <section class="card">
+      <div class="section-title">Batch 관리</div>
+      <div class="button-grid two">
+        <button onclick="startBatch()">새 batch 시작</button>
+        <button onclick="completeBatch()">batch 완성</button>
+      </div>
+      <div class="small-note">새 batch 시작 시 완성 예정 시간은 48시간 뒤로 저장돼요.</div>
+    </section>
+
+    <section class="card">
+      <div class="section-title">주문 관리</div>
+      <div class="button-grid two">
+        <button onclick="markOrdered()">주문함</button>
+        <button onclick="markArrived()">도착함</button>
+      </div>
+      <div class="small-note" id="orderStatus">주문 상태: 없음</div>
+    </section>
+
+    <section class="card">
+      <div class="section-title">수동 조정</div>
+
+      <div class="manual-row">
+        <input id="portionInput" type="number" min="0" step="0.5" placeholder="남은 용기 수" />
+        <button onclick="setPortions()">저장</button>
+      </div>
+
+      <div class="manual-row">
+        <input id="tubInput" type="number" min="0" step="1" placeholder="원통 재고 수" />
+        <button onclick="setTubs()">저장</button>
+      </div>
+
+      <div class="button-grid" style="margin-top: 10px;">
+        <button class="danger-button" onclick="resetData()">전체 초기화</button>
+      </div>
+    </section>
+
+    <div class="footer">Yogurt Guardian · localStorage MVP</div>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "yogurtGuardianData";
+
+    const defaultData = {
+      portions: 0,
+      tubs: 0,
+      batchStartedAt: null,
+      batchReadyAt: null,
+      orderStatus: "none"
+    };
+
+    let data = loadData();
+
+    function loadData() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+
+      if (!saved) {
+        return { ...defaultData };
+      }
+
+      try {
+        return { ...defaultData, ...JSON.parse(saved) };
+      } catch {
+        return { ...defaultData };
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      render();
+    }
+
+    function eatYogurt(amount) {
+      data.portions = Math.max(0, Number(data.portions) - amount);
+      saveData();
+    }
+
+    function startBatch() {
+      const now = new Date();
+      const ready = new Date(now.getTime() + 48 * 60 * 60 * 1000);
+
+      data.batchStartedAt = now.toISOString();
+      data.batchReadyAt = ready.toISOString();
+
+      if (data.tubs > 0) {
+        data.tubs = Math.max(0, data.tubs - 1);
+      }
+
+      saveData();
+    }
+
+    function completeBatch() {
+      const amount = prompt("이번 batch 완성량을 입력해 주세요. 기본값은 7개예요.", "7");
+
+      if (amount === null) return;
+
+      const parsed = Number(amount);
+
+      if (Number.isNaN(parsed) || parsed < 0) {
+        alert("숫자로 입력해 주세요.");
+        return;
+      }
+
+      data.portions = Number(data.portions) + parsed;
+      data.batchStartedAt = null;
+      data.batchReadyAt = null;
+
+      saveData();
+    }
+
+    function markOrdered() {
+      data.orderStatus = "ordered";
+      saveData();
+    }
+
+    function markArrived() {
+      data.orderStatus = "arrived";
+      data.tubs = Number(data.tubs) + 2;
+      saveData();
+    }
+
+    function setPortions() {
+      const input = document.getElementById("portionInput");
+      const value = Number(input.value);
+
+      if (Number.isNaN(value) || value < 0) {
+        alert("0 이상의 숫자로 입력해 주세요.");
+        return;
+      }
+
+      data.portions = value;
+      input.value = "";
+      saveData();
+    }
+
+    function setTubs() {
+      const input = document.getElementById("tubInput");
+      const value = Number(input.value);
+
+      if (Number.isNaN(value) || value < 0) {
+        alert("0 이상의 숫자로 입력해 주세요.");
+        return;
+      }
+
+      data.tubs = value;
+      input.value = "";
+      saveData();
+    }
+
+    function resetData() {
+      const ok = confirm("정말 전체 초기화할까요?");
+
+      if (!ok) return;
+
+      data = { ...defaultData };
+      saveData();
+    }
+
+    function getStatus() {
+      const portions = Number(data.portions);
+      const tubs = Number(data.tubs);
+      const hasBatch = Boolean(data.batchReadyAt);
+
+      if (portions <= 2 && !hasBatch) {
+        return {
+          text: "공백 위험: 지금 바로 batch 시작",
+          level: "danger"
+        };
+      }
+
+      if (portions <= 4 && !hasBatch) {
+        return {
+          text: "지금 새 batch 시작",
+          level: "warn"
+        };
+      }
+
+      if (tubs <= 0 && data.orderStatus !== "ordered") {
+        return {
+          text: "쿠팡 주문 필요",
+          level: "warn"
+        };
+      }
+
+      if (hasBatch) {
+        return {
+          text: "제작 중",
+          level: "safe"
+        };
+      }
+
+      if (portions > 4) {
+        return {
+          text: "안전",
+          level: "safe"
+        };
+      }
+
+      return {
+        text: "재고 입력 필요",
+        level: "warn"
+      };
+    }
+
+    function formatDateTime(isoString) {
+      if (!isoString) return "";
+
+      const date = new Date(isoString);
+
+      return date.toLocaleString("ko-KR", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function getBatchMessage() {
+      if (!data.batchReadyAt) return "";
+
+      const ready = new Date(data.batchReadyAt);
+      const now = new Date();
+      const diff = ready.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        return `완성 예정 시간이 지났어요. batch 완성 버튼을 눌러 재고에 추가하세요.`;
+      }
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+      return `제작 중이에요. 완성 예정: ${formatDateTime(data.batchReadyAt)} · 남은 시간: ${hours}시간 ${minutes}분`;
+    }
+
+    function getOrderText() {
+      if (data.orderStatus === "ordered") {
+        return "주문 상태: 주문함 / 배송 대기";
+      }
+
+      if (data.orderStatus === "arrived") {
+        return "주문 상태: 도착함";
+      }
+
+      return "주문 상태: 없음";
+    }
+
+    function render() {
+      const status = getStatus();
+
+      const statusEl = document.getElementById("status");
+      statusEl.textContent = status.text;
+      statusEl.className = `status ${status.level}`;
+
+      document.getElementById("portionCount").textContent = data.portions;
+      document.getElementById("daysLeft").textContent = `${(Number(data.portions) / 2).toFixed(1)}일`;
+      document.getElementById("tubCount").textContent = `${data.tubs}통`;
+
+      const batchInfo = document.getElementById("batchInfo");
+      const batchMessage = getBatchMessage();
+
+      if (batchMessage) {
+        batchInfo.textContent = batchMessage;
+        batchInfo.classList.add("visible");
+      } else {
+        batchInfo.textContent = "";
+        batchInfo.classList.remove("visible");
+      }
+
+      document.getElementById("orderStatus").textContent = getOrderText();
+    }
+
+    render();
+  </script>
 </body>
 </html>
