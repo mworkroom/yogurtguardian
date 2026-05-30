@@ -639,21 +639,21 @@
 
       if (tubs <= 0 && !isOrdered) {
         return {
-          text: "원통 재고 0통: 쿠팡에서 2통 주문 필요",
+          text: "재고 0통: 쿠팡에서 2통 주문 필요",
           level: "danger"
         };
       }
 
       if (tubs <= 0 && isOrdered) {
         return {
-          text: "원통 재고 0통: 주문 완료, 도착 대기 중",
+          text: "재고 0통: 주문 완료, 도착 대기 중",
           level: "warn"
         };
       }
 
       if (tubs === 1 && !hasBatch) {
         return {
-          text: "원통 재고 1통: 다음 batch 이후 바로 주문 필요",
+          text: "재고 1통: 다음 batch 이후 바로 주문 필요",
           level: "warn"
         };
       }
