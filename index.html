@@ -573,7 +573,7 @@ function startBatch() {
 
       if (tubs <= 0 && data.orderStatus !== "ordered") {
         return {
-          text: "쿠팡 주문 필요",
+          text: "주문 필요",
           level: "warn",
           imageKey: "order"
         };
@@ -645,7 +645,7 @@ function startBatch() {
 
       if (tubs <= 0 && !isOrdered) {
         return {
-          text: "재고 0통: 쿠팡에서 2통 주문 필요",
+          text: "재고 0통: 2통 주문 필요",
           level: "danger"
         };
       }
