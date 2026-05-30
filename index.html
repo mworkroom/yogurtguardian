@@ -277,6 +277,29 @@
       background: var(--accent-dark);
     }
 
+
+    .batch-start-row {
+      display: grid;
+      gap: 8px;
+    }
+    
+    .batch-start-row label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    
+    .batch-start-row input {
+      width: 100%;
+      border: 1px solid #cfe7d8;
+      border-radius: 16px;
+      padding: 13px 12px;
+      font-size: 16px;
+      background: #f8fdf9;
+      color: var(--text);
+    }
+    
+
     input {
       width: 100%;
       border: 1px solid #cfe7d8;
@@ -343,11 +366,18 @@
 
     <section class="card">
       <div class="section-title">Batch 관리</div>
-      <div class="button-grid two">
+    
+      <div class="batch-start-row">
+        <label for="batchStartInput">실제 유청분리 시작 시각</label>
+        <input id="batchStartInput" type="datetime-local" />
+      </div>
+    
+      <div class="button-grid two" style="margin-top: 10px;">
         <button onclick="startBatch()">새 batch 시작</button>
         <button onclick="completeBatch()">batch 완성</button>
       </div>
-      <div class="small-note">새 batch 시작 시 시작 시간과 48시간 뒤 완성 예정 시간이 저장돼요.</div>
+    
+      <div class="small-note">입력한 시작 시각 기준으로 48시간 뒤 완성 예정 시간이 저장돼요.</div>
     </section>
 
     <section class="card">
@@ -377,7 +407,7 @@
       </div>
     </section>
 
-    <div class="footer">Yogurt Guardian · localStorage MVP</div>
+    <div class="footer">Yogurt Guardian</div>
   </main>
 
   <script>
@@ -418,65 +448,34 @@
     }
 
     function startBatch() {
-      const defaultText = getCurrentLocalDateTimeText();
-    
-      const input = prompt(
-        "실제 유청분리 시작 시각을 입력해 주세요.\n형식: YYYY-MM-DD HH:mm",
-        defaultText
-      );
-    
-      if (input === null) return;
-    
-      const started = parseLocalDateTime(input);
-    
-      if (!started) {
-        alert("날짜 형식이 맞지 않아요. 예: 2026-05-31 22:30");
-        return;
-      }
-    
-      const ready = new Date(started.getTime() + 48 * 60 * 60 * 1000);
-    
-      data.batchStartedAt = started.toISOString();
-      data.batchReadyAt = ready.toISOString();
-    
-      if (data.tubs > 0) {
-        data.tubs = Math.max(0, Number(data.tubs) - 1);
-      }
-    
-      saveData();
+    const input = document.getElementById("batchStartInput");
+    const value = input.value;
+  
+    if (!value) {
+      alert("실제 유청분리 시작 시각을 입력해 주세요.");
+      return;
     }
-    
-    function getCurrentLocalDateTimeText() {
-      const now = new Date();
-    
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, "0");
-      const day = String(now.getDate()).padStart(2, "0");
-      const hour = String(now.getHours()).padStart(2, "0");
-      const minute = String(now.getMinutes()).padStart(2, "0");
-    
-      return `${year}-${month}-${day} ${hour}:${minute}`;
+  
+    const started = new Date(value);
+  
+    if (Number.isNaN(started.getTime())) {
+      alert("시작 시각을 다시 입력해 주세요.");
+      return;
     }
-    
-    function parseLocalDateTime(text) {
-      const match = text.trim().match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})$/);
-    
-      if (!match) return null;
-    
-      const [, year, month, day, hour, minute] = match;
-    
-      const date = new Date(
-        Number(year),
-        Number(month) - 1,
-        Number(day),
-        Number(hour),
-        Number(minute)
-      );
-    
-      if (Number.isNaN(date.getTime())) return null;
-    
-      return date;
+  
+    const ready = new Date(started.getTime() + 48 * 60 * 60 * 1000);
+  
+    data.batchStartedAt = started.toISOString();
+    data.batchReadyAt = ready.toISOString();
+  
+    if (data.tubs > 0) {
+      data.tubs = Math.max(0, Number(data.tubs) - 1);
     }
+  
+    saveData();
+  }
+   
+ 
 
     function completeBatch() {
       const amount = prompt("이번 batch 완성량을 입력해 주세요. 기본값은 7개예요.", "7");
@@ -734,8 +733,31 @@
       }
 
       document.getElementById("orderStatus").textContent = getOrderText();
+      setDefaultBatchStartInput();
     }
 
+
+    function getLocalDateTimeValue(date = new Date()) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const hour = String(date.getHours()).padStart(2, "0");
+      const minute = String(date.getMinutes()).padStart(2, "0");
+    
+      return `${year}-${month}-${day}T${hour}:${minute}`;
+    }
+    
+    function setDefaultBatchStartInput() {
+      const input = document.getElementById("batchStartInput");
+    
+      if (!input) return;
+    
+      if (!input.value) {
+        input.value = getLocalDateTimeValue();
+      }
+    }    
+
+    
     render();
   </script>
 </body>
