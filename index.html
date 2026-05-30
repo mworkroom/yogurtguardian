@@ -11,17 +11,17 @@
       --card: #ffffff;
       --text: #26332f;
       --muted: #6f7f78;
-    
+
       --accent: #4fae7b;
       --accent-dark: #3f9468;
-    
+
       --blue: #5aa7d8;
       --blue-soft: #e7f4fb;
-    
+
       --safe: #3f9468;
       --warn: #d8892c;
       --danger: #c75353;
-    
+
       --border: #d9ebe1;
     }
 
@@ -63,17 +63,30 @@
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.86);
+      background: rgba(255, 255, 255, 0.9);
       border: 1px solid var(--border);
       border-radius: 24px;
       padding: 18px;
-      box-shadow: 0 12px 30px rgba(113, 74, 46, 0.12);
+      box-shadow: 0 12px 30px rgba(42, 93, 67, 0.12);
       margin-bottom: 14px;
       backdrop-filter: blur(10px);
     }
 
     .status-card {
       text-align: center;
+    }
+
+    .mascot-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .mascot-image {
+      width: 128px;
+      height: 128px;
+      object-fit: contain;
+      display: none;
     }
 
     .status-label {
@@ -175,11 +188,11 @@
       color: white;
       box-shadow: none;
     }
-    
+
     .primary:active {
       background: var(--accent-dark);
     }
-    
+
     .secondary {
       background: var(--blue-soft);
     }
@@ -206,10 +219,39 @@
       font-size: 14px;
       color: var(--muted);
       line-height: 1.5;
+      white-space: pre-line;
+      text-align: left;
     }
 
     .batch-info.visible {
       display: block;
+    }
+
+    .alert-box {
+      display: none;
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.45;
+      text-align: left;
+    }
+
+    .alert-box.visible {
+      display: block;
+    }
+
+    .alert-box.warn {
+      background: #fff3dc;
+      color: #a86114;
+      border: 1px solid #f0d29c;
+    }
+
+    .alert-box.danger {
+      background: #ffe4e4;
+      color: #a83f3f;
+      border: 1px solid #efbaba;
     }
 
     .manual-row {
@@ -217,6 +259,16 @@
       grid-template-columns: 1fr auto;
       gap: 8px;
       margin-top: 10px;
+    }
+
+    .manual-row input {
+      background: #f8fdf9;
+      border: 1px solid #cfe7d8;
+    }
+
+    .manual-row button {
+      background: #e7f4fb;
+      box-shadow: inset 0 0 0 1px #b9dced;
     }
 
     input {
@@ -235,36 +287,6 @@
       font-size: 12px;
       margin-top: 18px;
     }
-
-    .alert-box {
-      display: none;
-      margin-top: 12px;
-      padding: 12px 14px;
-      border-radius: 16px;
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 1.45;
-      text-align: left;
-    }
-    
-    .alert-box.visible {
-      display: block;
-    }
-    
-    .alert-box.warn {
-      background: #fff3dc;
-      color: #a86114;
-      border: 1px solid #f0d29c;
-    }
-    
-    .alert-box.danger {
-      background: #ffe4e4;
-      color: #a83f3f;
-      border: 1px solid #efbaba;
-    }
-
-
-    
   </style>
 </head>
 
@@ -276,6 +298,10 @@
     </header>
 
     <section class="card status-card">
+      <div class="mascot-wrap">
+        <img id="mascotImage" class="mascot-image" src="" alt="Yogurt Guardian status image" />
+      </div>
+
       <div class="status-label">현재 상태</div>
       <div id="status" class="status">재고 입력 필요</div>
 
@@ -315,7 +341,7 @@
         <button onclick="startBatch()">새 batch 시작</button>
         <button onclick="completeBatch()">batch 완성</button>
       </div>
-      <div class="small-note">새 batch 시작 시 완성 예정 시간은 48시간 뒤로 저장돼요.</div>
+      <div class="small-note">새 batch 시작 시 시작 시간과 48시간 뒤 완성 예정 시간이 저장돼요.</div>
     </section>
 
     <section class="card">
@@ -393,7 +419,7 @@
       data.batchReadyAt = ready.toISOString();
 
       if (data.tubs > 0) {
-        data.tubs = Math.max(0, data.tubs - 1);
+        data.tubs = Math.max(0, Number(data.tubs) - 1);
       }
 
       saveData();
@@ -474,41 +500,47 @@
       if (portions <= 2 && !hasBatch) {
         return {
           text: "공백 위험: 지금 바로 batch 시작",
-          level: "danger"
+          level: "danger",
+          imageKey: "danger"
         };
       }
 
       if (portions <= 4 && !hasBatch) {
         return {
           text: "지금 새 batch 시작",
-          level: "warn"
+          level: "warn",
+          imageKey: "startBatch"
         };
       }
 
       if (tubs <= 0 && data.orderStatus !== "ordered") {
         return {
           text: "쿠팡 주문 필요",
-          level: "warn"
+          level: "warn",
+          imageKey: "order"
         };
       }
 
       if (hasBatch) {
         return {
           text: "제작 중",
-          level: "safe"
+          level: "safe",
+          imageKey: "making"
         };
       }
 
       if (portions > 4) {
         return {
           text: "안전",
-          level: "safe"
+          level: "safe",
+          imageKey: "safe"
         };
       }
 
       return {
         text: "재고 입력 필요",
-        level: "warn"
+        level: "warn",
+        imageKey: "neutral"
       };
     }
 
@@ -532,14 +564,49 @@
       const now = new Date();
       const diff = ready.getTime() - now.getTime();
 
+      const startedText = data.batchStartedAt
+        ? `시작: ${formatDateTime(data.batchStartedAt)}`
+        : "시작 시간 없음";
+
+      const readyText = `완성 예정: ${formatDateTime(data.batchReadyAt)}`;
+
       if (diff <= 0) {
-        return `완성 예정 시간이 지났어요. batch 완성 버튼을 눌러 재고에 추가하세요.`;
+        return `${startedText} · ${readyText}\n완성 예정 시간이 지났어요. batch 완성 버튼을 눌러 재고에 추가하세요.`;
       }
 
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-      return `제작 중이에요. 완성 예정: ${formatDateTime(data.batchReadyAt)} · 남은 시간: ${hours}시간 ${minutes}분`;
+      return `${startedText} · ${readyText}\n남은 시간: ${hours}시간 ${minutes}분`;
+    }
+
+    function getStockAlert() {
+      const tubs = Number(data.tubs);
+      const hasBatch = Boolean(data.batchReadyAt);
+      const isOrdered = data.orderStatus === "ordered";
+
+      if (tubs <= 0 && !isOrdered) {
+        return {
+          text: "원통 재고 0통: 쿠팡에서 2통 주문 필요",
+          level: "danger"
+        };
+      }
+
+      if (tubs <= 0 && isOrdered) {
+        return {
+          text: "원통 재고 0통: 주문 완료, 도착 대기 중",
+          level: "warn"
+        };
+      }
+
+      if (tubs === 1 && !hasBatch) {
+        return {
+          text: "원통 재고 1통: 다음 batch 이후 바로 주문 필요",
+          level: "warn"
+        };
+      }
+
+      return null;
     }
 
     function getOrderText() {
@@ -554,37 +621,34 @@
       return "주문 상태: 없음";
     }
 
-    function getStockAlert() {
-    const tubs = Number(data.tubs);
-    const hasBatch = Boolean(data.batchReadyAt);
-    const isOrdered = data.orderStatus === "ordered";
-  
-    if (tubs <= 0 && !isOrdered) {
-      return {
-        text: "원통 재고 0통: 쿠팡에서 2통 주문 필요",
-        level: "danger"
+    function updateMascotImage(imageKey) {
+      const img = document.getElementById("mascotImage");
+
+      const imageMap = {
+        safe: "images/mascot-safe.png",
+        making: "images/mascot-making.png",
+        startBatch: "images/mascot-start-batch.png",
+        danger: "images/mascot-danger.png",
+        order: "images/mascot-order.png",
+        neutral: "images/mascot-neutral.png"
       };
+
+      const src = imageMap[imageKey];
+
+      if (!src) {
+        img.style.display = "none";
+        img.removeAttribute("src");
+        return;
+      }
+
+      img.src = src;
+      img.style.display = "block";
     }
-  
-    if (tubs <= 0 && isOrdered) {
-      return {
-        text: "원통 재고 0통: 주문 완료, 도착 대기 중",
-        level: "warn"
-      };
-    }
-  
-    if (tubs === 1 && !hasBatch) {
-      return {
-        text: "원통 재고 1통: 다음 batch 이후 바로 주문 필요",
-        level: "warn"
-      };
-    }
-  
-    return null;
-  }
 
     function render() {
       const status = getStatus();
+
+      updateMascotImage(status.imageKey);
 
       const statusEl = document.getElementById("status");
       statusEl.textContent = status.text;
@@ -605,10 +669,9 @@
         batchInfo.classList.remove("visible");
       }
 
-      document.getElementById("orderStatus").textContent = getOrderText();
       const stockAlert = document.getElementById("stockAlert");
       const stockAlertData = getStockAlert();
-      
+
       if (stockAlertData) {
         stockAlert.textContent = stockAlertData.text;
         stockAlert.className = `alert-box visible ${stockAlertData.level}`;
@@ -616,6 +679,8 @@
         stockAlert.textContent = "";
         stockAlert.className = "alert-box";
       }
+
+      document.getElementById("orderStatus").textContent = getOrderText();
     }
 
     render();
