@@ -418,17 +418,64 @@
     }
 
     function startBatch() {
-      const now = new Date();
-      const ready = new Date(now.getTime() + 48 * 60 * 60 * 1000);
-
-      data.batchStartedAt = now.toISOString();
+      const defaultText = getCurrentLocalDateTimeText();
+    
+      const input = prompt(
+        "실제 유청분리 시작 시각을 입력해 주세요.\n형식: YYYY-MM-DD HH:mm",
+        defaultText
+      );
+    
+      if (input === null) return;
+    
+      const started = parseLocalDateTime(input);
+    
+      if (!started) {
+        alert("날짜 형식이 맞지 않아요. 예: 2026-05-31 22:30");
+        return;
+      }
+    
+      const ready = new Date(started.getTime() + 48 * 60 * 60 * 1000);
+    
+      data.batchStartedAt = started.toISOString();
       data.batchReadyAt = ready.toISOString();
-
+    
       if (data.tubs > 0) {
         data.tubs = Math.max(0, Number(data.tubs) - 1);
       }
-
+    
       saveData();
+    }
+    
+    function getCurrentLocalDateTimeText() {
+      const now = new Date();
+    
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      const hour = String(now.getHours()).padStart(2, "0");
+      const minute = String(now.getMinutes()).padStart(2, "0");
+    
+      return `${year}-${month}-${day} ${hour}:${minute}`;
+    }
+    
+    function parseLocalDateTime(text) {
+      const match = text.trim().match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})$/);
+    
+      if (!match) return null;
+    
+      const [, year, month, day, hour, minute] = match;
+    
+      const date = new Date(
+        Number(year),
+        Number(month) - 1,
+        Number(day),
+        Number(hour),
+        Number(minute)
+      );
+    
+      if (Number.isNaN(date.getTime())) return null;
+    
+      return date;
     }
 
     function completeBatch() {
