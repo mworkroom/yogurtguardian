@@ -229,6 +229,36 @@
       font-size: 12px;
       margin-top: 18px;
     }
+
+    .alert-box {
+      display: none;
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.45;
+      text-align: left;
+    }
+    
+    .alert-box.visible {
+      display: block;
+    }
+    
+    .alert-box.warn {
+      background: #fff3dc;
+      color: #a86114;
+      border: 1px solid #f0d29c;
+    }
+    
+    .alert-box.danger {
+      background: #ffe4e4;
+      color: #a83f3f;
+      border: 1px solid #efbaba;
+    }
+
+
+    
   </style>
 </head>
 
@@ -258,6 +288,7 @@
       </div>
 
       <div id="batchInfo" class="batch-info"></div>
+      <div id="stockAlert" class="alert-box"></div>
     </section>
 
     <section class="card">
@@ -517,6 +548,35 @@
       return "주문 상태: 없음";
     }
 
+    function getStockAlert() {
+    const tubs = Number(data.tubs);
+    const hasBatch = Boolean(data.batchReadyAt);
+    const isOrdered = data.orderStatus === "ordered";
+  
+    if (tubs <= 0 && !isOrdered) {
+      return {
+        text: "원통 재고 0통: 쿠팡에서 2통 주문 필요",
+        level: "danger"
+      };
+    }
+  
+    if (tubs <= 0 && isOrdered) {
+      return {
+        text: "원통 재고 0통: 주문 완료, 도착 대기 중",
+        level: "warn"
+      };
+    }
+  
+    if (tubs === 1 && !hasBatch) {
+      return {
+        text: "원통 재고 1통: 다음 batch 이후 바로 주문 필요",
+        level: "warn"
+      };
+    }
+  
+    return null;
+  }
+
     function render() {
       const status = getStatus();
 
@@ -540,6 +600,16 @@
       }
 
       document.getElementById("orderStatus").textContent = getOrderText();
+      const stockAlert = document.getElementById("stockAlert");
+      const stockAlertData = getStockAlert();
+      
+      if (stockAlertData) {
+        stockAlert.textContent = stockAlertData.text;
+        stockAlert.className = `alert-box visible ${stockAlertData.level}`;
+      } else {
+        stockAlert.textContent = "";
+        stockAlert.className = "alert-box";
+      }
     }
 
     render();
