@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <title>Yogurt Guardian</title>
 
   <style>
@@ -19,7 +20,7 @@
       --blue-soft: #e7f4fb;
 
       --safe: #3f9468;
-      --warn: #d8892c;
+      --warn: #c75353;
       --danger: #c75353;
 
       --border: #d9ebe1;
@@ -267,8 +268,13 @@
     }
 
     .manual-row button {
-      background: #e7f4fb;
-      box-shadow: inset 0 0 0 1px #b9dced;
+      background: var(--accent);
+      color: white;
+      box-shadow: none;
+    }
+    
+    .manual-row button:active {
+      background: var(--accent-dark);
     }
 
     input {
