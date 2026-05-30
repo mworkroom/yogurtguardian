@@ -623,13 +623,13 @@
       const readyText = `\n완성 예정: ${formatDateTime(data.batchReadyAt)}`;
 
       if (diff <= 0) {
-        return `${startedText} · ${readyText}\n완성 예정 시간이 지났어요. batch 완성 버튼을 눌러 재고에 추가하세요.`;
+        return `${startedText}${readyText}\n완성 예정 시간이 지났어요. batch 완성 버튼을 눌러 재고에 추가하세요.`;
       }
 
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-      return `${startedText} · ${readyText}\n남은 시간: ${hours}시간 ${minutes}분`;
+      return `${startedText}${readyText}\n남은 시간: ${hours}시간 ${minutes}분`;
     }
 
     function getStockAlert() {
