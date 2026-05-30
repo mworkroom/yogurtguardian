@@ -281,6 +281,7 @@
     .batch-start-row {
       display: grid;
       gap: 8px;
+      width: 100%;
     }
     
     .batch-start-row label {
@@ -291,12 +292,16 @@
     
     .batch-start-row input {
       width: 100%;
+      max-width: 100%;
+      min-width: 0;
       border: 1px solid #cfe7d8;
       border-radius: 16px;
       padding: 13px 12px;
       font-size: 16px;
       background: #f8fdf9;
       color: var(--text);
+      -webkit-appearance: none;
+      appearance: none;
     }
     
 
@@ -368,16 +373,15 @@
       <div class="section-title">Batch 관리</div>
     
       <div class="batch-start-row">
-        <label for="batchStartInput">실제 유청분리 시작 시각</label>
-        <input id="batchStartInput" type="datetime-local" />
+        <label for="batchStartInput">새 batch 시작</label>
+        <input id="batchStartInput" type="datetime-local" onchange="startBatch()" />
       </div>
     
-      <div class="button-grid two" style="margin-top: 10px;">
-        <button onclick="startBatch()">새 batch 시작</button>
-        <button onclick="completeBatch()">batch 완성</button>
+      <div class="button-grid" style="margin-top: 10px;">
+        <button class="primary" onclick="completeBatch()">batch 완성</button>
       </div>
     
-      <div class="small-note">입력한 시작 시각 기준으로 48시간 뒤 완성 예정 시간이 저장돼요.</div>
+      <div class="small-note">시작 시각을 선택하면 48시간 뒤 완성 예정 시간이 저장돼요.</div>
     </section>
 
     <section class="card">
@@ -447,33 +451,35 @@
       saveData();
     }
 
-    function startBatch() {
-    const input = document.getElementById("batchStartInput");
-    const value = input.value;
-  
-    if (!value) {
-      alert("실제 유청분리 시작 시각을 입력해 주세요.");
-      return;
-    }
-  
-    const started = new Date(value);
-  
-    if (Number.isNaN(started.getTime())) {
-      alert("시작 시각을 다시 입력해 주세요.");
-      return;
-    }
-  
-    const ready = new Date(started.getTime() + 48 * 60 * 60 * 1000);
-  
-    data.batchStartedAt = started.toISOString();
-    data.batchReadyAt = ready.toISOString();
-  
-    if (data.tubs > 0) {
-      data.tubs = Math.max(0, Number(data.tubs) - 1);
-    }
-  
-    saveData();
+function startBatch() {
+  const input = document.getElementById("batchStartInput");
+  const value = input.value;
+
+  if (!value) {
+    alert("실제 유청분리 시작 시각을 입력해 주세요.");
+    return;
   }
+
+  const started = new Date(value);
+
+  if (Number.isNaN(started.getTime())) {
+    alert("시작 시각을 다시 입력해 주세요.");
+    return;
+  }
+
+  const ready = new Date(started.getTime() + 48 * 60 * 60 * 1000);
+
+  const alreadyMaking = Boolean(data.batchReadyAt);
+
+  data.batchStartedAt = started.toISOString();
+  data.batchReadyAt = ready.toISOString();
+
+  if (!alreadyMaking && data.tubs > 0) {
+    data.tubs = Math.max(0, Number(data.tubs) - 1);
+  }
+
+  saveData();
+}
    
  
 
