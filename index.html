@@ -550,57 +550,57 @@ function startBatch() {
       saveData();
     }
 
-    function getStatus() {
-      const portions = Number(data.portions);
-      const tubs = Number(data.tubs);
-      const hasBatch = Boolean(data.batchReadyAt);
+function getStatus() {
+  const portions = Number(data.portions);
+  const tubs = Number(data.tubs);
+  const hasBatch = Boolean(data.batchReadyAt);
 
-      if (portions <= 2 && !hasBatch) {
-        return {
-          text: "공백 위험: \n지금 바로 batch 시작",
-          level: "danger",
-          imageKey: "danger"
-        };
-      }
+  if (portions <= 2) {
+    return {
+      text: "공백 위험:\n요거트 부족",
+      level: "danger",
+      imageKey: "danger"
+    };
+  }
 
-      if (portions <= 4 && !hasBatch) {
-        return {
-          text: "지금 새 batch 시작",
-          level: "warn",
-          imageKey: "startBatch"
-        };
-      }
+  if (portions <= 4 && !hasBatch) {
+    return {
+      text: "지금 새 batch 시작",
+      level: "warn",
+      imageKey: "startBatch"
+    };
+  }
 
-      if (tubs <= 0 && data.orderStatus !== "ordered") {
-        return {
-          text: "주문 필요",
-          level: "warn",
-          imageKey: "order"
-        };
-      }
+  if (hasBatch) {
+    return {
+      text: "제작 중",
+      level: "safe",
+      imageKey: "making"
+    };
+  }
 
-      if (hasBatch) {
-        return {
-          text: "제작 중",
-          level: "safe",
-          imageKey: "making"
-        };
-      }
+  if (tubs <= 0 && data.orderStatus !== "ordered") {
+    return {
+      text: "주문 필요",
+      level: "warn",
+      imageKey: "order"
+    };
+  }
 
-      if (portions > 4) {
-        return {
-          text: "안전",
-          level: "safe",
-          imageKey: "safe"
-        };
-      }
+  if (portions > 4) {
+    return {
+      text: "안전",
+      level: "safe",
+      imageKey: "safe"
+    };
+  }
 
-      return {
-        text: "재고 입력 필요",
-        level: "warn",
-        imageKey: "neutral"
-      };
-    }
+  return {
+    text: "재고 입력 필요",
+    level: "warn",
+    imageKey: "neutral"
+  };
+}
 
     function formatDateTime(isoString) {
       if (!isoString) return "";
