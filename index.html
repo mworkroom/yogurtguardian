@@ -370,7 +370,7 @@
 
     <section class="card">
       
-      <div class="section-title">Batch 관리</div>
+      <div class="section-title">제작 관리</div>
       <div class="batch-start-row">
         <input id="batchStartInput" type="datetime-local" onchange="startBatch()" />
       </div>
@@ -561,9 +561,9 @@ function getStatus() {
     };
   }
 
-  if (portions <= 4 && !hasBatch) {
+  if (portions <= 5 && !hasBatch) {
     return {
-      text: "지금 새 batch 시작",
+      text: "당장 유청분리 시작!\n요거트 공백 임박",
       level: "warn",
       imageKey: "startBatch"
     };
@@ -628,7 +628,7 @@ function getStatus() {
       const readyText = `\n완성 예정: ${formatDateTime(data.batchReadyAt)}`;
 
       if (diff <= 0) {
-        return `${startedText}${readyText}\n완성 예정 시간이 지났어요. batch 완성 버튼을 눌러 재고에 추가하세요.`;
+        return `${startedText}${readyText}\n완성 예정 시간이 지났어요. 완성 버튼을 눌러 재고에 추가하세요.`;
       }
 
       const hours = Math.floor(diff / (1000 * 60 * 60));
