@@ -508,8 +508,20 @@ function startBatch() {
     }
 
     function markArrived() {
+      const amount = prompt("도착한 원통 수를 입력해 주세요. 기본값은 2통이에요.", "2");
+    
+      if (amount === null) return;
+    
+      const parsed = Number(amount);
+    
+      if (Number.isNaN(parsed) || parsed < 0) {
+        alert("숫자로 입력해 주세요.");
+        return;
+      }
+    
       data.orderStatus = "arrived";
-      data.tubs = Number(data.tubs) + 2;
+      data.tubs = Number(data.tubs) + parsed;
+    
       saveData();
     }
 
