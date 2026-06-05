@@ -555,7 +555,7 @@ function getStatus() {
   const tubs = Number(data.tubs);
   const hasBatch = Boolean(data.batchReadyAt);
 
-  if (portions <= 2) {
+  if (portions <= 2 && !hasBatch) {
     return {
       text: "공백 위험:\n요거트 부족",
       level: "danger",
@@ -587,7 +587,7 @@ function getStatus() {
     };
   }
 
-  if (portions > 4) {
+  if (portions > 5) {
     return {
       text: "안전",
       level: "safe",
